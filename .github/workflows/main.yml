@@ -60,7 +60,7 @@ jobs:
         cp squashfs-root/cursor.desktop ./deb_package/usr/share/applications/
         cp -r squashfs-root/usr ./deb_package/
         cat > ./deb_package/DEBIAN/control << EOL
-        Package: ${{ env.$FILENAMENOEXT }}
+        Package: ${{ env.FILENAMENOEXT }}
         Version: ${{ env.APP_VERSION }}
         Section: base
         Priority: optional
