@@ -71,24 +71,24 @@ jobs:
         EOL
         
         dpkg-deb --build deb_package
-        mv deb_package.deb ${{ env.$FILENAMENOEXT }}.deb
+        mv deb_package.deb ${{ env.FILENAMENOEXT }}.deb
 
     - name: Create .rpm package
       if: env.PROCEED == 'true'
       run: |
-        alien -r --scripts ${{ env.$FILENAMENOEXT }}.deb
-        mv *.rpm ${{ env.$FILENAMENOEXT }}.rpm
+        alien -r --scripts ${{ env.FILENAMENOEXT }}.deb
+        mv *.rpm ${{ env.FILENAMENOEXT }}.rpm
 
     - name: Upload .deb artifact
       if: env.PROCEED == 'true'
       uses: actions/upload-artifact@v3
       with:
         name: deb-package
-        path: ${{ env.$FILENAMENOEXT }}.deb
+        path: ${{ env.FILENAMENOEXT }}.deb
 
     - name: Upload .rpm artifact
       if: env.PROCEED == 'true'
       uses: actions/upload-artifact@v3
       with:
         name: rpm-package
-        path: ${{ env.$FILENAMENOEXT }}.rpm
+        path: ${{ env.FILENAMENOEXT }}.rpm
