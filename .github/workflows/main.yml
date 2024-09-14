@@ -38,13 +38,16 @@ jobs:
 
     - name: Create .deb package
       run: |
-        mkdir -p ./deb_package/DEBIAN
-        mkdir -p ./deb_package/usr/bin
-        mkdir -p ./deb_package/usr/share/applications
-        cp squashfs-root/AppRun ./deb_package/usr/bin/cursor
-        sed -i 's|Exec=/opt/cursor\.appimage|Exec=/usr/bin/cursor|g' squashfs-root/cursor.desktop
-        cp squashfs-root/cursor.desktop ./deb_package/usr/share/applications/
-        cp -r squashfs-root/usr ./deb_package/
+        mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/local/cursor
+        mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/local/bin
+        mkdir -p ./cursor-${{ env.APP_VERSION }}/DEBIAN
+        mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/bin
+        mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/share/applications
+        mv ./cursor-${{ env.APP_VERSION }}/{*,.*} cursor-${ver}/usr/local/cursor
+        ( cd ./cursor-${{ env.APP_VERSION }}/usr/local/bin/ && ln -s ../cursor/cursor . )
+        sed -i 's|Exec=/opt/cursor\.appimage|Exec=/usr/local/bin/cursor|g' squashfs-root/cursor.desktop
+        cp squashfs-root/cursor.desktop ./cursor-${{ env.APP_VERSION }}/usr/share/applications/
+        cp -r squashfs-root/usr ./cursor-${{ env.APP_VERSION }}/
         cat > ./deb_package/DEBIAN/control << EOL
         Package: cursor
         Version: ${{ env.APP_VERSION }}
