@@ -59,7 +59,7 @@ jobs:
          This is a converted AppImage of ${{ env.FILENAME }}. Because app images make my soul hurt
         EOL
         
-        dpkg-deb --build cursor-${{ env.APP_VERSION.}}
+        dpkg-deb --build cursor-${{ env.APP_VERSION }}
 
     - name: Create .rpm package
       run: |
