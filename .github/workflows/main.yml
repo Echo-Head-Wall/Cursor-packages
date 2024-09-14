@@ -35,22 +35,7 @@ jobs:
         VERSION=$(grep -oP '(?<=^Version=).+' squashfs-root/*.desktop | head -1)
         echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
 
-    - name: Check cached version
-      id: check_version
-      uses: actions/cache@v3
-      with:
-        path: ~/.cache/app-version
-        key: ${{ runner.os }}-app-version-${{ env.APP_VERSION }}
-
-    - name: Compare versions
-      if: steps.check_version.outputs.cache-hit != 'true'
-      run: |
-        echo "New version detected: ${{ env.APP_VERSION }}"
-        echo "${{ env.APP_VERSION }}" > ~/.cache/app-version
-        echo "PROCEED=true" >> $GITHUB_ENV
-
     - name: Create .deb package
-      if: env.PROCEED == 'true'
       run: |
         mkdir -p ./deb_package/DEBIAN
         mkdir -p ./deb_package/usr/bin
@@ -74,20 +59,17 @@ jobs:
         mv deb_package.deb ${{ env.FILENAMENOEXT }}.deb
 
     - name: Create .rpm package
-      if: env.PROCEED == 'true'
       run: |
         alien -r --scripts ${{ env.FILENAMENOEXT }}.deb
         mv *.rpm ${{ env.FILENAMENOEXT }}.rpm
 
     - name: Upload .deb artifact
-      if: env.PROCEED == 'true'
       uses: actions/upload-artifact@v3
       with:
         name: deb-package
         path: ${{ env.FILENAMENOEXT }}.deb
 
     - name: Upload .rpm artifact
-      if: env.PROCEED == 'true'
       uses: actions/upload-artifact@v3
       with:
         name: rpm-package
