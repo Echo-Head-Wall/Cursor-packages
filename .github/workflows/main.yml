@@ -37,7 +37,7 @@ jobs:
 
     - name: Check cached version
       id: check_version
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/.cache/app-version
         key: ${{ runner.os }}-app-version-${{ env.APP_VERSION }}
