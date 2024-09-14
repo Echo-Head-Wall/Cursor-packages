@@ -1,0 +1,92 @@
+name: Convert AppImage to .deb and .rpm
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run daily at midnight UTC
+  workflow_dispatch:  # Allow manual triggers
+
+env:
+  APPIMAGE_URL: https://downloader.cursor.sh/linux/appImage/x64
+
+jobs:
+  check_and_convert:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget fakeroot alien
+
+    - name: Download Latest Cursor
+      run: export FILENAME=$(curl -sJw '%{filename_effective}' -O $APPIMAGE_URL) && export FILENAMENOEXT="${FILENAME%.*}"
+
+
+    - name: Make AppImage executable
+      run: chmod +x $FILENAME
+
+    - name: Extract AppImage and get version
+      run: |
+        ./$FILENAME --appimage-extract
+        VERSION=$(grep -oP '(?<=^Version=).+' squashfs-root/*.desktop | head -1)
+        echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+
+    - name: Check cached version
+      id: check_version
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/app-version
+        key: ${{ runner.os }}-app-version-${{ env.APP_VERSION }}
+
+    - name: Compare versions
+      if: steps.check_version.outputs.cache-hit != 'true'
+      run: |
+        echo "New version detected: ${{ env.APP_VERSION }}"
+        echo "${{ env.APP_VERSION }}" > ~/.cache/app-version
+        echo "PROCEED=true" >> $GITHUB_ENV
+
+    - name: Create .deb package
+      if: env.PROCEED == 'true'
+      run: |
+        mkdir -p ./deb_package/DEBIAN
+        mkdir -p ./deb_package/usr/bin
+        mkdir -p ./deb_package/usr/share/applications
+        cp squashfs-root/AppRun ./deb_package/usr/bin/cursor
+        sed -i 's|Exec=/opt/cursor\.appimage|Exec=/usr/bin/cursor|g' squashfs-root/cursor.desktop
+        cp squashfs-root/cursor.desktop ./deb_package/usr/share/applications/
+        cp -r squashfs-root/usr ./deb_package/
+        cat > ./deb_package/DEBIAN/control << EOL
+        Package: $FILENAMENOEXT
+        Version: ${{ env.APP_VERSION }}
+        Section: base
+        Priority: optional
+        Architecture: amd64
+        Maintainer: Echo-Head-Wall echo@magicalmeowmeow.moe
+        Description: $FILENAME
+         This is a converted AppImage of $FILENAME. Because app images make my soul hurt
+        EOL
+        
+        dpkg-deb --build deb_package
+        mv deb_package.deb $FILENAMENOEXT.deb
+
+    - name: Create .rpm package
+      if: env.PROCEED == 'true'
+      run: |
+        alien -r --scripts $FILENAMENOEXT.deb
+        mv *.rpm $FILENAMENOEXT.rpm
+
+    - name: Upload .deb artifact
+      if: env.PROCEED == 'true'
+      uses: actions/upload-artifact@v2
+      with:
+        name: deb-package
+        path: $FILENAMENOEXT.deb
+
+    - name: Upload .rpm artifact
+      if: env.PROCEED == 'true'
+      uses: actions/upload-artifact@v2
+      with:
+        name: rpm-package
+        path: $FILENAMENOEXT.rpm
