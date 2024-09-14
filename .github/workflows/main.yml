@@ -21,15 +21,17 @@ jobs:
         sudo apt-get install -y wget fakeroot alien
 
     - name: Download Latest Cursor
-      run: export FILENAME=$(curl -sJw '%{filename_effective}' -O $APPIMAGE_URL) && export FILENAMENOEXT="${FILENAME%.*}"
-
+      run: |
+        export FILENAME=$(curl -sJw '%{filename_effective}' -O $APPIMAGE_URL) && export FILENAMENOEXT="${FILENAME%.*}"
+        echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+        echo "FILENAMENOEXT=$FILENAMENOEXT" >> $GITHUB_ENV
 
     - name: Make AppImage executable
-      run: chmod +x $FILENAME
+      run: chmod +x ${{ env.FILENAME }}
 
     - name: Extract AppImage and get version
       run: |
-        ./$FILENAME --appimage-extract
+        ./${{ env.FILENAME }} --appimage-extract
         VERSION=$(grep -oP '(?<=^Version=).+' squashfs-root/*.desktop | head -1)
         echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
 
@@ -58,35 +60,35 @@ jobs:
         cp squashfs-root/cursor.desktop ./deb_package/usr/share/applications/
         cp -r squashfs-root/usr ./deb_package/
         cat > ./deb_package/DEBIAN/control << EOL
-        Package: $FILENAMENOEXT
+        Package: ${{ env.$FILENAMENOEXT }}
         Version: ${{ env.APP_VERSION }}
         Section: base
         Priority: optional
         Architecture: amd64
         Maintainer: Echo-Head-Wall echo@magicalmeowmeow.moe
-        Description: $FILENAME
-         This is a converted AppImage of $FILENAME. Because app images make my soul hurt
+        Description: ${{ env.FILENAME }}
+         This is a converted AppImage of ${{ env.FILENAME }}. Because app images make my soul hurt
         EOL
         
         dpkg-deb --build deb_package
-        mv deb_package.deb $FILENAMENOEXT.deb
+        mv deb_package.deb ${{ env.$FILENAMENOEXT }}.deb
 
     - name: Create .rpm package
       if: env.PROCEED == 'true'
       run: |
-        alien -r --scripts $FILENAMENOEXT.deb
-        mv *.rpm $FILENAMENOEXT.rpm
+        alien -r --scripts ${{ env.$FILENAMENOEXT }}.deb
+        mv *.rpm ${{ env.$FILENAMENOEXT }}.rpm
 
     - name: Upload .deb artifact
       if: env.PROCEED == 'true'
       uses: actions/upload-artifact@v3
       with:
         name: deb-package
-        path: $FILENAMENOEXT.deb
+        path: ${{ env.$FILENAMENOEXT }}.deb
 
     - name: Upload .rpm artifact
       if: env.PROCEED == 'true'
       uses: actions/upload-artifact@v3
       with:
         name: rpm-package
-        path: $FILENAMENOEXT.rpm
+        path: ${{ env.$FILENAMENOEXT }}.rpm
