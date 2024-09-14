@@ -43,7 +43,7 @@ jobs:
         mkdir -p ./cursor-${{ env.APP_VERSION }}/DEBIAN
         mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/bin
         mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/share/applications
-        mv ./cursor-${{ env.APP_VERSION }}/{*,.*} ${{ env.APP_VERSION }/usr/local/cursor
+        mv ./cursor-${{ env.APP_VERSION }}/{*,.*} ${{ env.APP_VERSION }}/usr/local/cursor
         ( cd ./cursor-${{ env.APP_VERSION }}/usr/local/bin/ && ln -s ../cursor/cursor . )
         sed -i 's|Exec=/opt/cursor\.appimage|Exec=/usr/local/bin/cursor|g' squashfs-root/cursor.desktop
         cp squashfs-root/cursor.desktop ./cursor-${{ env.APP_VERSION }}/usr/share/applications/
