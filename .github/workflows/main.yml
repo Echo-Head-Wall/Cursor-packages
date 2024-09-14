@@ -79,14 +79,14 @@ jobs:
 
     - name: Upload .deb artifact
       if: env.PROCEED == 'true'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: deb-package
         path: $FILENAMENOEXT.deb
 
     - name: Upload .rpm artifact
       if: env.PROCEED == 'true'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: rpm-package
         path: $FILENAMENOEXT.rpm
