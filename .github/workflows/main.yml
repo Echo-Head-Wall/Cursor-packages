@@ -34,14 +34,16 @@ jobs:
 
     - name: Extract AppImage and get version
       run: |
-        ./${{ env.FILENAME }} --appimage-extract
         export APP_VERSION=$(echo ${{ env.FILENAMENOEXT }} | sed -E 's/.*-([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
         echo $APP_VERSION
         echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
 
     - name: Create .deb package
       run: |
+        ls
+        ./${{ env.FILENAME }} --appimage-extract
         mv squashfs-root cursor-${{ env.APP_VERSION }}
+        ls
         mkdir -p cursor-${{ env.APP_VERSION }}/usr/local/cursor
         mkdir -p cursor-${{ env.APP_VERSION }}/usr/local/bin
         mkdir -p cursor-${{ env.APP_VERSION }}/DEBIAN
