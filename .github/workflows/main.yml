@@ -59,22 +59,21 @@ jobs:
          This is a converted AppImage of ${{ env.FILENAME }}. Because app images make my soul hurt
         EOL
         
-        dpkg-deb --build deb_package
-        mv deb_package.deb ${{ env.FILENAMENOEXT }}.deb
+        dpkg-deb --build cursor-${{ env.APP_VERSION.}}
 
     - name: Create .rpm package
       run: |
-        alien -r --scripts ${{ env.FILENAMENOEXT }}.deb
-        mv *.rpm ${{ env.FILENAMENOEXT }}.rpm
+        alien -r --scripts cursor-${{ env.APP_VERSION }}.deb
+        mv *.rpm cursor-${{ env.APP_VERION }}.rpm
 
     - name: Upload .deb artifact
       uses: actions/upload-artifact@v4
       with:
         name: deb-package
-        path: ${{ env.FILENAMENOEXT }}.deb
+        path: cursor-${{ env.APP_VERSION }}.deb
 
     - name: Upload .rpm artifact
       uses: actions/upload-artifact@v4
       with:
         name: rpm-package
-        path: ${{ env.FILENAMENOEXT }}.rpm
+        path: cursor-${{ env.APP_VERSION }}.rpm
