@@ -42,15 +42,15 @@ jobs:
       run: |
         ls
         ./${{ env.FILENAME }} --appimage-extract
-        mv squashfs-root cursor-${{ env.APP_VERSION }}
         ls
+        rm ./${{ env.FILENAME }}
         mkdir -p cursor-${{ env.APP_VERSION }}/usr/local/cursor
         mkdir -p cursor-${{ env.APP_VERSION }}/usr/local/bin
         mkdir -p cursor-${{ env.APP_VERSION }}/DEBIAN
         # mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/bin
         # mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/share/applications
         ls
-        mv cursor-${ env.APP_VERSION }/{*,.*} ./cursor-${{ env.APP_VERSION }}/usr/local/cursor
+        mv cursor-${{ env.APP_VERSION }}/{*,.*} ./cursor-${{ env.APP_VERSION }}/usr/local/cursor
         ( cd cursor-${{ env.APP_VERSION }}/usr/local/bin/ && ln -s ../cursor/cursor . )
         sed -i 's|Exec=/opt/cursor\.appimage|Exec=/usr/local/bin/cursor|g' squashfs-root/cursor.desktop
         cp squashfs-root/cursor.desktop ./cursor-${{ env.APP_VERSION }}/usr/share/applications/
