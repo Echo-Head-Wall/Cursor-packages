@@ -55,7 +55,7 @@ jobs:
         sed -i 's|Exec=/opt/cursor\.appimage|Exec=/usr/local/bin/cursor|g' squashfs-root/cursor.desktop
         cp squashfs-root/cursor.desktop ./cursor-${{ env.APP_VERSION }}/usr/share/applications/
         # cp -r squashfs-root/usr ./cursor-${{ env.APP_VERSION }}/
-        cat > ./deb_package/DEBIAN/control << EOL
+        cat > ./cursor-${{ env.APP_VERSION }}/DEBIAN/control << EOL
         Package: cursor
         Version: ${{ env.APP_VERSION }}
         Section: base
