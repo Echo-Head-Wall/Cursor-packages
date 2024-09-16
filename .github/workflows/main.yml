@@ -70,7 +70,11 @@ jobs:
 
     - name: Create .rpm package
       run: |
+        mkdir ./alien
+        cp cursor-${{ env.APP_VERSION }}.deb ./alien/
+        cd alien
         sudo alien -r --scripts cursor-${{ env.APP_VERSION }}.deb
+        cd ..
 
     - name: Upload .deb artifact
       uses: actions/upload-artifact@v4
@@ -82,4 +86,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: rpm-package
-        path: cursor-${{ env.APP_VERSION }}.rpm
+        path: ./alien/cursor-${{ env.APP_VERSION }}.rpm
