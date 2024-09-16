@@ -50,7 +50,7 @@ jobs:
         # mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/bin
         # mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/share/applications
         ls
-        mv cursor-${{ env.APP_VERSION }}/* ./cursor-${{ env.APP_VERSION }}/usr/local/cursor
+        cp ./squashfs-root/* ./cursor-${{ env.APP_VERSION }}/usr/local/cursor
         ( cd cursor-${{ env.APP_VERSION }}/usr/local/bin/ && ln -s ../cursor/cursor . )
         sed -i 's|Exec=/opt/cursor\.appimage|Exec=/usr/local/bin/cursor|g' squashfs-root/cursor.desktop
         cp squashfs-root/cursor.desktop ./cursor-${{ env.APP_VERSION }}/usr/share/applications/
