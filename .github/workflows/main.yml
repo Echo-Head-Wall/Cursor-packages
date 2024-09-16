@@ -50,11 +50,11 @@ jobs:
         # mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/bin
         # mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/share/applications
         ls
-        cp ./squashfs-root/* ./cursor-${{ env.APP_VERSION }}/usr/local/cursor
+        cp -r ./squashfs-root/* ./cursor-${{ env.APP_VERSION }}/usr/local/cursor
         ( cd cursor-${{ env.APP_VERSION }}/usr/local/bin/ && ln -s ../cursor/cursor . )
         sed -i 's|Exec=/opt/cursor\.appimage|Exec=/usr/local/bin/cursor|g' squashfs-root/cursor.desktop
         cp squashfs-root/cursor.desktop ./cursor-${{ env.APP_VERSION }}/usr/share/applications/
-        cp -r squashfs-root/usr ./cursor-${{ env.APP_VERSION }}/
+        # cp -r squashfs-root/usr ./cursor-${{ env.APP_VERSION }}/
         cat > ./deb_package/DEBIAN/control << EOL
         Package: cursor
         Version: ${{ env.APP_VERSION }}
