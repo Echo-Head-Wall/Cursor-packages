@@ -48,7 +48,7 @@ jobs:
         mkdir -p cursor-${{ env.APP_VERSION }}/usr/local/bin
         mkdir -p cursor-${{ env.APP_VERSION }}/DEBIAN
         # mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/bin
-        # mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/share/applications
+        mkdir -p ./cursor-${{ env.APP_VERSION }}/usr/share/applications
         ls
         cp -r ./squashfs-root/* ./cursor-${{ env.APP_VERSION }}/usr/local/cursor
         ( cd cursor-${{ env.APP_VERSION }}/usr/local/bin/ && ln -s ../cursor/cursor . )
